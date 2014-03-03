@@ -43,6 +43,7 @@ public class TaskAdapter {
 
     public boolean process(Object... args) throws Throwable {
         //return (boolean) methodHandle.asVarargsCollector(Object[].class).invoke(bean, args);
+        // Fugly hack. Need to find a way to do this correctly
         switch(args.length) {
             case 0:
                 return (boolean) methodHandle.invoke(bean);

@@ -4,8 +4,9 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class FlowAdapter {
@@ -58,6 +59,10 @@ public class FlowAdapter {
         return name;
     }
 
+    public Map<String, TaskAdapter> getTasks() {
+        return Collections.unmodifiableMap(tasks);
+    }
+
     public void add(TaskAdapter taskAdapter) {
         tasks.put(taskAdapter.getName(), taskAdapter);
         if (taskAdapter.isStart()) {
@@ -65,9 +70,16 @@ public class FlowAdapter {
         }
     }
 
+    public void remove(TaskAdapter taskAdapter) {
+        tasks.remove(taskAdapter);
+        if (taskAdapter.isStart()) {
+            setStartPoint(null);
+        }
+    }
+
     public void setStartPoint(TaskAdapter taskAdapter) {
         if (tasks.containsKey(START_TASK)) {
-            throw new BeanInstantiationException(taskAdapter.getBean().getClass(), "Only one @Task can be annotated with @Start");
+            throw new BeanDefinitionValidationException("Only one @Task can be annotated with @Start");
         }
         tasks.put(START_TASK, taskAdapter);
     }

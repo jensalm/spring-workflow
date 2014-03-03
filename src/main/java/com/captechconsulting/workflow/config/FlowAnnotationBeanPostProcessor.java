@@ -1,8 +1,8 @@
 package com.captechconsulting.workflow.config;
 
-import com.captechconsulting.workflow.stereotypes.*;
 import com.captechconsulting.workflow.engine.FlowAdapter;
 import com.captechconsulting.workflow.engine.TaskAdapter;
+import com.captechconsulting.workflow.stereotypes.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
@@ -47,8 +48,26 @@ public class FlowAnnotationBeanPostProcessor extends InstantiationAwareBeanPostP
                 beanFactory.registerSingleton(name, adapter);
             }
             scanTasks(bean, adapter, flow.types());
+            sanityCheck(adapter);
         }
         return bean;
+    }
+
+    private void sanityCheck(FlowAdapter flowAdapter) throws BeanDefinitionValidationException {
+        for (TaskAdapter taskAdapter : flowAdapter.getTasks().values()) {
+            sanityCheck(flowAdapter, taskAdapter);
+        }
+    }
+
+    private void sanityCheck(FlowAdapter flowAdapter, TaskAdapter taskAdapter) throws BeanDefinitionValidationException {
+        String yes = taskAdapter.getYes();
+        if (StringUtils.isNotBlank(yes) && !flowAdapter.getTasks().containsKey(yes)) {
+            throw new BeanDefinitionValidationException("Task " + taskAdapter.getName() + " has a yes annotation with task name " + yes + " which doesn't exist");
+        }
+        String no = taskAdapter.getNo();
+        if (StringUtils.isNotBlank(no) && !flowAdapter.getTasks().containsKey(no)) {
+            throw new BeanDefinitionValidationException("Task " + taskAdapter.getName() + " has a no annotation with task name " + no + " which doesn't exist");
+        }
     }
 
     protected void scanTasks(final Object bean, final FlowAdapter flowAdapter, final Class... types) {

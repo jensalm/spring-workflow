@@ -1,4 +1,4 @@
-package com.captechconsulting.workflow.multiple;
+package com.captechconsulting.workflow.missing;
 
 import com.captechconsulting.workflow.FlowExecutor;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
@@ -19,34 +19,33 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Configuration
-@ComponentScan(basePackages = "com.captechconsulting.workflow.multiple")
+@ComponentScan(basePackages = "com.captechconsulting.workflow.missing")
 @EnableWorkFlow
-public class MultipleStartFlowTest {
+public class MissingTaskFlowTest {
 
-    private static final transient Logger LOG = LoggerFactory.getLogger(MultipleStartFlowTest.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(MissingTaskFlowTest.class);
 
     @Test(expected = BeanCreationException.class)
     public void test() throws Throwable {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(MultipleStartFlowTest.class);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(MissingTaskFlowTest.class);
         FlowExecutor executor = ctx.getBean(FlowExecutor.class);
         assertNotNull(executor);
-        boolean success = executor.execute("MultipleStartFlow");
+        boolean success = executor.execute("MissingTaskFlow");
         assertTrue(success);
     }
 
     @Flow
-    public static class MultipleStartFlow {
+    public static class MissingTaskFlow {
 
         @Task
         @Start
-        @Yes("task2")
+        @Yes("task3")
         public Boolean task1() {
             LOG.debug("Task 1");
             return true;
         }
 
         @Task
-        @Start
         public Boolean task2() {
             LOG.debug("Task 2");
             return true;

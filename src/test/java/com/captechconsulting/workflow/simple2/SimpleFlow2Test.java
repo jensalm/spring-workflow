@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Configuration
-@ComponentScan(basePackages = "com.captechconsulting.workflow.simple")
+@ComponentScan(basePackages = "com.captechconsulting.workflow.simple2")
 @EnableWorkFlow
 public class SimpleFlow2Test {
 
