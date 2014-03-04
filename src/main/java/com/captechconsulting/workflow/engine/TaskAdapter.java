@@ -10,6 +10,7 @@ import java.lang.invoke.MethodType;
 public class TaskAdapter {
 
     private Object bean;
+    private final Class[] types;
     private String name;
     private String flow;
     private String yes;
@@ -20,6 +21,7 @@ public class TaskAdapter {
 
     public TaskAdapter(Task task, Yes yes, No no, Start start, Object bean, String methodName, Class... types) {
         this.bean = bean;
+        this.types = types;
         this.flow = StringUtils.isNotBlank(task.flow()) ? task.flow() : this.bean.getClass().getSimpleName();
         this.yes = yes != null ? yes.value() : null;
         this.no = no != null ? no.value() : null;
@@ -42,24 +44,7 @@ public class TaskAdapter {
     }
 
     public boolean process(Object... args) throws Throwable {
-        //return (boolean) methodHandle.asVarargsCollector(Object[].class).invoke(bean, args);
-        // Fugly hack. Need to find a way to do this correctly
-        switch(args.length) {
-            case 0:
-                return (boolean) methodHandle.invoke(bean);
-            case 1:
-                return (boolean) methodHandle.invoke(bean, args[0]);
-            case 2:
-                return (boolean) methodHandle.invoke(bean, args[0], args[1]);
-            case 3:
-                return (boolean) methodHandle.invoke(bean, args[0], args[1], args[2]);
-            case 4:
-                return (boolean) methodHandle.invoke(bean, args[0], args[1], args[2], args[3]);
-            case 5:
-                return (boolean) methodHandle.invoke(bean, args[0], args[1], args[2], args[3], args[4]);
-            default:
-                throw new RuntimeException("To many args: "+args.length);
-        }
+        return (boolean) methodHandle.asSpreader(args.getClass(), args.length).invoke(bean, args);
     }
 
     public String getName() {
