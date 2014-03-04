@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FlowAdapter {
@@ -60,7 +61,9 @@ public class FlowAdapter {
     }
 
     public Map<String, TaskAdapter> getTasks() {
-        return Collections.unmodifiableMap(tasks);
+        HashMap<String,TaskAdapter> uniqueTasks = Maps.newHashMap(tasks);
+        uniqueTasks.remove(START_TASK);
+        return Collections.unmodifiableMap(uniqueTasks);
     }
 
     public void add(TaskAdapter taskAdapter) {
@@ -77,10 +80,18 @@ public class FlowAdapter {
         }
     }
 
+    public TaskAdapter getStart() {
+        return tasks.get(START_TASK);
+    }
+
     public void setStartPoint(TaskAdapter taskAdapter) {
         if (tasks.containsKey(START_TASK)) {
             throw new BeanDefinitionValidationException("Only one @Task can be annotated with @Start");
         }
         tasks.put(START_TASK, taskAdapter);
+    }
+
+    public TaskAdapter getTask(String name) {
+        return tasks.get(name);
     }
 }

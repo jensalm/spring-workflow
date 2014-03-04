@@ -1,7 +1,13 @@
 package com.captechconsulting.workflow.engine;
 
-import com.captechconsulting.workflow.stereotypes.*;
+import com.captechconsulting.workflow.stereotypes.No;
+import com.captechconsulting.workflow.stereotypes.Start;
+import com.captechconsulting.workflow.stereotypes.Task;
+import com.captechconsulting.workflow.stereotypes.Yes;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -9,8 +15,9 @@ import java.lang.invoke.MethodType;
 
 public class TaskAdapter {
 
+    private static final transient Logger LOG = LoggerFactory.getLogger(TaskAdapter.class);
+
     private Object bean;
-    private final Class[] types;
     private String name;
     private String flow;
     private String yes;
@@ -21,7 +28,6 @@ public class TaskAdapter {
 
     public TaskAdapter(Task task, Yes yes, No no, Start start, Object bean, String methodName, Class... types) {
         this.bean = bean;
-        this.types = types;
         this.flow = StringUtils.isNotBlank(task.flow()) ? task.flow() : this.bean.getClass().getSimpleName();
         this.yes = yes != null ? yes.value() : null;
         this.no = no != null ? no.value() : null;
@@ -44,6 +50,7 @@ public class TaskAdapter {
     }
 
     public boolean process(Object... args) throws Throwable {
+        LOG.debug("Executing task '" + getName() + "'");
         return (boolean) methodHandle.asSpreader(args.getClass(), args.length).invoke(bean, args);
     }
 
@@ -59,15 +66,19 @@ public class TaskAdapter {
         return start;
     }
 
-    public String getYes(){
+    public String getYes() {
         return yes;
     }
 
-    public String getNo(){
+    public String getNo() {
         return no;
     }
 
-    public Object getBean() {
-        return bean;
+    public String getBeanName() {
+        return bean.getClass().getName();
+    }
+
+    public String getMethod() {
+        return methodHandle.toString();
     }
 }
