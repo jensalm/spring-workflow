@@ -16,98 +16,151 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-public class JsonPrinter {
+/**
+ * Creates a JSON tree from the flow or task.
+ */
+public final class JsonExporter {
 
-    private static final transient Logger LOG = LoggerFactory.getLogger(JsonPrinter.class);
+    private static final String YES = "yes";
+    private static final String NO = "no";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String TASKS = "tasks";
+    private static final String FLOW = "flow";
+    private static final String START = "start";
+    private static final String CLASS = "class";
+    private static final String METHOD = "method";
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private boolean prettyPrint;
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public JsonPrinter() {
-        this.prettyPrint = false;
+    private JsonExporter() { }
+
+    /**
+     * Creates a small JSON tree of all the adapters
+     * @param adapters
+     * @return JSON tree
+     * @throws JsonProcessingException
+     */
+    public static JsonNode export(Collection<FlowAdapter> adapters) throws JsonProcessingException {
+        return export(adapters, false);
     }
 
-    public JsonPrinter(boolean prettyPrint) {
-        this.prettyPrint = prettyPrint;
-    }
-
-    public String write2(FlowAdapter flowAdapter) throws JsonProcessingException {
-        return getWriter().writeValueAsString(flowAdapter);
-    }
-
-    public String write(FlowAdapter flowAdapter) throws JsonProcessingException {
+    /**
+     * Creates a JSON tree of all the adapters
+     * @param adapters
+     * @param fullExport true gives all details while false is small
+     * @return JSON tree
+     * @throws JsonProcessingException
+     */
+    public static JsonNode export(Collection<FlowAdapter> adapters, Boolean fullExport) throws JsonProcessingException {
+        ArrayNode flowNode = objectMapper.createArrayNode();
+        for (FlowAdapter entry : adapters) {
+            flowNode.add(export(entry, fullExport));
+        }
 
         ObjectNode rootNode = objectMapper.createObjectNode();
-        rootNode.put("name", flowAdapter.getName());
-        rootNode.put("tasks", createTasks(flowAdapter.getTasks()));
-        rootNode.put("flow", createFlow(flowAdapter, flowAdapter.getStart()));
-
-        return getWriter().writeValueAsString(rootNode);
+        rootNode.put("flows", flowNode);
+        return rootNode;
     }
 
-    private ObjectNode createTasks(Map<String, TaskAdapter> tasks) {
-        ObjectNode taskNode = objectMapper.createObjectNode();
-        for (String name : tasks.keySet()) {
-            TaskAdapter adapter = tasks.get(name);
-            taskNode.put(name, createTask(adapter));
+    /**
+     * Creates a small JSON tree from a flow.
+     * @param flowAdapter
+     * @return JSON tree
+     * @throws JsonProcessingException
+     * @see FlowAdapter
+     */
+    public static JsonNode export(FlowAdapter flowAdapter) throws JsonProcessingException {
+        return export(flowAdapter, false);
+    }
+
+    /**
+     * Creates a JSON tree from a flow.
+     * @param flowAdapter
+     * @return JSON tree
+     * @param fullExport true gives all details while false is small
+     * @throws JsonProcessingException
+     * @see FlowAdapter
+     */
+    public static JsonNode export(FlowAdapter flowAdapter, Boolean fullExport) throws JsonProcessingException {
+
+        ObjectNode rootNode = objectMapper.createObjectNode();
+        rootNode.put(NAME, flowAdapter.getName());
+        rootNode.put(DESCRIPTION, flowAdapter.getDescription());
+        if (fullExport) {
+            ArrayNode taskNode = objectMapper.createArrayNode();
+            for (Map.Entry<String, TaskAdapter> entry : flowAdapter.getTasks().entrySet()) {
+                taskNode.add(export(entry.getValue(), fullExport));
+            }
+            rootNode.put(TASKS, taskNode);
+            rootNode.put(FLOW, createFlow(flowAdapter, flowAdapter.getStartTask(), Sets.<String>newHashSet()));
         }
-        return taskNode;
+        return rootNode;
     }
 
-    private JsonNode createTask(TaskAdapter adapter) {
+    /**
+     * Creates a small JSON tree from a task.
+     * @param adapter
+     * @return JSON tree
+     * @see TaskAdapter
+     */
+    public static JsonNode export(TaskAdapter adapter) {
+        return export(adapter, false);
+    }
+
+    /**
+     * Creates a JSON tree from a task.
+     * @param adapter
+     * @param fullExport true gives all details while false is small
+     * @return JSON tree
+     * @see TaskAdapter
+     */
+    public static JsonNode export(TaskAdapter adapter, Boolean fullExport) {
         ObjectNode node = objectMapper.createObjectNode();
-        if (StringUtils.isNotBlank(adapter.getYes())) {
-            node.put("yes", adapter.getYes());
+        node.put(NAME, adapter.getName());
+        node.put(DESCRIPTION, adapter.getDescription());
+        if (fullExport) {
+            if (StringUtils.isNotBlank(adapter.getYes())) {
+                node.put(YES, adapter.getYes());
+            }
+            if (StringUtils.isNotBlank(adapter.getNo())) {
+                node.put(NO, adapter.getNo());
+            }
+            if (adapter.isStart()) {
+                node.put(START, Boolean.TRUE);
+            }
+            node.put(CLASS, adapter.getBeanName());
+            node.put(METHOD, adapter.getMethod());
         }
-        if (StringUtils.isNotBlank(adapter.getNo())) {
-            node.put("no", adapter.getNo());
-        }
-        if (adapter.isStart()) {
-            node.put("start", Boolean.TRUE);
-        }
-        node.put("class", adapter.getBeanName());
-        node.put("method", adapter.getMethod());
         return node;
     }
 
-    private JsonNode createFlow(FlowAdapter flowAdapter, TaskAdapter taskAdapter) {
+    private static JsonNode createFlow(FlowAdapter flowAdapter, TaskAdapter taskAdapter, Set<String> done) {
         ObjectNode node = objectMapper.createObjectNode();
-        node.put("name", taskAdapter.getName());
+        node.put(NAME, taskAdapter.getName());
         String yes = taskAdapter.getYes();
         String no = taskAdapter.getNo();
         if (StringUtils.isNotBlank(yes) || StringUtils.isNotBlank(no)) {
-            if (StringUtils.isNotBlank(yes) && flowAdapter.getTasks().containsKey(yes)) {
-                JsonNode jsonNode = createFlow(flowAdapter, flowAdapter.getTask(taskAdapter.getYes()));
-                if (jsonNode != null) {
-                    node.put("yes", jsonNode);
-                }
-            }
-            if (StringUtils.isNotBlank(no) && flowAdapter.getTasks().containsKey(no)) {
-                JsonNode jsonNode = createFlow(flowAdapter, flowAdapter.getTask(taskAdapter.getNo()));
-                if (jsonNode != null) {
-                    node.put("no", jsonNode);
-                }
-            }
+            addTaskNode(node, flowAdapter, taskAdapter.getName(), YES, yes, done);
+            addTaskNode(node, flowAdapter, taskAdapter.getName(), NO, no, done);
         }
         return node;
     }
 
-
-    private ObjectWriter getWriter() {
-        if (prettyPrint) {
-            LOG.debug("Using pretty print");
-            return objectMapper.writerWithDefaultPrettyPrinter();
-        } else {
-            LOG.debug("Using standard print");
-            return objectMapper.writer();
+    private static void addTaskNode(ObjectNode node, FlowAdapter flowAdapter, String taskName, String key, String nextTask,
+                                    Set<String> done) {
+        if (StringUtils.isNotBlank(nextTask) && flowAdapter.getTasks().containsKey(nextTask) &&
+                !done.contains(createKey(taskName, nextTask))) {
+            done.add(createKey(taskName, nextTask));
+            JsonNode jsonNode = createFlow(flowAdapter, flowAdapter.getTask(nextTask), done);
+            if (jsonNode != null) {
+                node.put(key, jsonNode);
+            }
         }
     }
 
-    public boolean isPrettyPrint() {
-        return prettyPrint;
+    private static String createKey(String taskName, String nextTask) {
+        return taskName + " -> " + nextTask;
     }
 
-    public void setPrettyPrint(boolean prettyPrint) {
-        this.prettyPrint = prettyPrint;
-    }
 }
