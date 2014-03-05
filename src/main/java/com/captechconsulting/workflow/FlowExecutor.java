@@ -1,9 +1,6 @@
 package com.captechconsulting.workflow;
 
-import com.captechconsulting.workflow.engine.FlowAdapter;
-
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Entry point for all workflow interaction. This class should be a

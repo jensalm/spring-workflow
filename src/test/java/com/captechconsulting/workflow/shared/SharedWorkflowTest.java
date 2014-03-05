@@ -1,11 +1,11 @@
 package com.captechconsulting.workflow.shared;
 
-import com.bofa.p3d.workflow.FlowExecutor;
-import com.bofa.p3d.workflow.config.EnableWorkFlow;
-import com.bofa.p3d.workflow.stereotypes.Flow;
-import com.bofa.p3d.workflow.stereotypes.Start;
-import com.bofa.p3d.workflow.stereotypes.Task;
-import com.bofa.p3d.workflow.stereotypes.Yes;
+import com.captechconsulting.workflow.FlowExecutor;
+import com.captechconsulting.workflow.config.EnableWorkFlow;
+import com.captechconsulting.workflow.stereotypes.Flow;
+import com.captechconsulting.workflow.stereotypes.Start;
+import com.captechconsulting.workflow.stereotypes.Task;
+import com.captechconsulting.workflow.stereotypes.Yes;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,15 +18,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Configuration
-@ComponentScan(basePackages = "com.bofa.p3d.workflow.shared")
+@ComponentScan(basePackages = "com.captechconsulting.workflow.shared")
 @EnableWorkFlow
-public class SharedTaskWorkflowTest {
+public class SharedWorkflowTest {
 
-    private static final transient Logger LOG = LoggerFactory.getLogger(SharedTaskWorkflowTest.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(SharedWorkflowTest.class);
 
     @Test
     public void test() throws Throwable {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(SharedTaskWorkflowTest.class);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(SharedWorkflowTest.class);
         FlowExecutor executor = ctx.getBean(FlowExecutor.class);
         assertNotNull(executor);
         boolean success = executor.execute("shared1", "");
@@ -76,5 +76,6 @@ public class SharedTaskWorkflowTest {
             return false;
         }
     }
+
 
 }

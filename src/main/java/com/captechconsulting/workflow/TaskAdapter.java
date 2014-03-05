@@ -1,17 +1,19 @@
-package com.captechconsulting.workflow.engine;
+package com.captechconsulting.workflow;
 
 import com.captechconsulting.workflow.stereotypes.No;
 import com.captechconsulting.workflow.stereotypes.Start;
 import com.captechconsulting.workflow.stereotypes.Task;
 import com.captechconsulting.workflow.stereotypes.Yes;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
 
 /**
  * Wraps a task to enable executing from a flow. Any method which has

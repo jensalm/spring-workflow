@@ -2,8 +2,11 @@ package com.captechconsulting.workflow.export;
 
 import com.captechconsulting.workflow.FlowExecutor;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
-import com.captechconsulting.workflow.engine.FlowAdapter;
+import com.captechconsulting.workflow.FlowAdapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +15,15 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @Configuration
 @ComponentScan(basePackages = "com.captechconsulting.workflow.simple2")
 @EnableWorkFlow
-public class JsonPrinterTest {
+public class JsonExporterTest {
 
-    private static final transient Logger LOG = LoggerFactory.getLogger(JsonPrinterTest.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(JsonExporterTest.class);
 
     @Test
     public void print() throws JsonProcessingException {

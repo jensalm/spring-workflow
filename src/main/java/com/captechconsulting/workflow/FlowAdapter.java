@@ -1,4 +1,4 @@
-package com.captechconsulting.workflow.engine;
+package com.captechconsulting.workflow;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;

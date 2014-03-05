@@ -1,9 +1,25 @@
 package com.captechconsulting.workflow.split;
 
+import com.captechconsulting.workflow.FlowExecutor;
+import com.captechconsulting.workflow.config.EnableWorkFlow;
+import com.captechconsulting.workflow.stereotypes.*;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Random;
+
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @Configuration
-@ComponentScan(basePackages = "com.bofa.p3d.workflow.split")
+@ComponentScan(basePackages = "com.captechconsulting.workflow.split")
 @EnableWorkFlow
-public class SplitWorkflowTes {
+public class SplitWorkflowTest {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(SplitWorkflowTest.class);
 

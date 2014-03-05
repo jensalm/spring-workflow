@@ -1,10 +1,10 @@
 package com.captechconsulting.workflow.config;
 
-import com.bofa.p3d.workflow.FlowExecutor;
-import com.bofa.p3d.workflow.FlowAdapter;
-import com.bofa.p3d.workflow.TaskAdapter;
-import com.bofa.p3d.workflow.stereotypes.Flow;
-import com.bofa.p3d.workflow.stereotypes.Task;
+import com.captechconsulting.workflow.FlowAdapter;
+import com.captechconsulting.workflow.FlowExecutor;
+import com.captechconsulting.workflow.TaskAdapter;
+import com.captechconsulting.workflow.stereotypes.Flow;
+import com.captechconsulting.workflow.stereotypes.Task;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;

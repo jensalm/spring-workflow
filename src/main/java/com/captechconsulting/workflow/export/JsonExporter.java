@@ -1,4 +1,18 @@
-package com.captechconsulting.workflow;
+package com.captechconsulting.workflow.export;
+
+import com.captechconsulting.workflow.FlowAdapter;
+import com.captechconsulting.workflow.TaskAdapter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Creates a JSON tree from the flow or task.
@@ -131,8 +145,8 @@ public final class JsonExporter {
         return node;
     }
 
-    private static void addTaskNode(ObjectNode node, FlowAdapter flowAdapter, String taskName, String key, String nextTask,
-                                    Set<String> done) {
+    private static void addTaskNode(ObjectNode node, FlowAdapter flowAdapter, String taskName,
+                                    String key, String nextTask, Set<String> done) {
         if (StringUtils.isNotBlank(nextTask) && flowAdapter.getTasks().containsKey(nextTask) &&
                 !done.contains(createKey(taskName, nextTask))) {
             done.add(createKey(taskName, nextTask));
