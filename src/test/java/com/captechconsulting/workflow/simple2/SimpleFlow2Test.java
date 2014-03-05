@@ -66,7 +66,7 @@ public class SimpleFlow2Test {
 
         @Task
         @Yes("task4")
-        @No("task5")
+        @No("task2")
         public Boolean task3(String s, Map m, List l) {
             LOG.debug("-----------------------");
             LOG.debug("Task 3");
