@@ -10,6 +10,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Wraps a flow of tasks. It has a starting point and will process
+ * all tasks depending on the tasks return type.
+ * @see TaskAdapter
+ */
 public class FlowAdapter {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(FlowAdapter.class);
@@ -18,28 +23,49 @@ public class FlowAdapter {
 
     private String name;
 
+    private String description;
+
     private Map<String, TaskAdapter> tasks = Maps.newHashMap();
 
-    public FlowAdapter(String name) {
+    /**
+     * Creates a new FlowAdapter
+     * @param name
+     */
+    public FlowAdapter(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
-    public boolean start(Object... args) throws Throwable {
+    /**
+     * Starts the processing of the flow by getting the task marked with
+     * @Start and executing it.
+     * @param args
+     * @return if the the task succeed or not
+     * @throws WorkflowException
+     */
+    public boolean start(Object... args) throws WorkflowException {
         return processTask(START_TASK, args);
     }
 
-    private boolean processTask(String taskName, Object... args) throws Throwable {
+    /**
+     * Recursively executes all tasks associated with this FlowAdapter.
+     * @param taskName
+     * @param args
+     * @return
+     * @throws WorkflowException
+     */
+    private boolean processTask(String taskName, Object... args) throws WorkflowException {
         if (StringUtils.isNotBlank(taskName)) {
             if (LOG.isDebugEnabled()) {
                 if (START_TASK.equals(taskName)) {
                     LOG.debug("Looking up starting point");
                 } else {
-                    LOG.debug("Looking up task [" + taskName + "]");
+                    LOG.debug("Looking up task '" + taskName + "'");
                 }
             }
             TaskAdapter adapter = tasks.get(taskName);
             if (adapter != null) {
-                LOG.debug("Processing task [" + adapter.getName() + "]");
+                LOG.debug("Processing task '" + adapter.getName() + "'");
                 boolean result = adapter.process(args);
                 if (result) {
                     LOG.debug("Task returned true, processing yes task");
@@ -60,38 +86,84 @@ public class FlowAdapter {
         return name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Returns a non-modifiable map of all the tasks in the flow.
+     * @return tasks in this flow
+     */
     public Map<String, TaskAdapter> getTasks() {
-        HashMap<String,TaskAdapter> uniqueTasks = Maps.newHashMap(tasks);
+        HashMap<String, TaskAdapter> uniqueTasks = Maps.newHashMap(tasks);
         uniqueTasks.remove(START_TASK);
         return Collections.unmodifiableMap(uniqueTasks);
     }
 
+    /**
+     * Adds a task to the flow
+     * @param taskAdapter
+     */
     public void add(TaskAdapter taskAdapter) {
         tasks.put(taskAdapter.getName(), taskAdapter);
         if (taskAdapter.isStart()) {
-            setStartPoint(taskAdapter);
+            setStartTask(taskAdapter);
         }
     }
 
+    /**
+     * Removes the task named from the flow
+     * @param taskName
+     */
+    public void remove(String taskName) {
+        remove(tasks.get(taskName));
+    }
+
+    /**
+     * Removes a task from the flow. If it is the start task, the
+     * start will be set to null.
+     * @param taskAdapter
+     */
     public void remove(TaskAdapter taskAdapter) {
-        tasks.remove(taskAdapter);
+        tasks.remove(taskAdapter.getName());
         if (taskAdapter.isStart()) {
-            setStartPoint(null);
+            setStartTask(null);
         }
     }
 
-    public TaskAdapter getStart() {
-        return tasks.get(START_TASK);
-    }
-
-    public void setStartPoint(TaskAdapter taskAdapter) {
+    /**
+     * Sets the start task for this flow. Can only be 1 start.
+     * @param taskAdapter
+     */
+    public void setStartTask(TaskAdapter taskAdapter) {
         if (tasks.containsKey(START_TASK)) {
             throw new BeanDefinitionValidationException("Only one @Task can be annotated with @Start");
         }
         tasks.put(START_TASK, taskAdapter);
     }
 
-    public TaskAdapter getTask(String name) {
-        return tasks.get(name);
+    /**
+     * Indicates if the start task is set.
+     * @return true if start task is set
+     */
+    public boolean hasStartTask() {
+        return tasks.containsKey(START_TASK);
+    }
+
+    /**
+     * Returns the start task if it is set
+     * @return task or null
+     */
+    public TaskAdapter getStartTask() {
+        return tasks.get(START_TASK);
+    }
+
+    /**
+     * Returns the named task if it exists
+     * @param taskName
+     * @return task or null
+     */
+    public TaskAdapter getTask(String taskName) {
+        return tasks.get(taskName);
     }
 }
