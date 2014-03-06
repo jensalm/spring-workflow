@@ -28,6 +28,7 @@ public final class JsonExporter {
     private static final String START = "start";
     private static final String CLASS = "class";
     private static final String METHOD = "method";
+    private static final String END = "END";
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -120,9 +121,13 @@ public final class JsonExporter {
         if (fullExport) {
             if (StringUtils.isNotBlank(adapter.getYes())) {
                 node.put(YES, adapter.getYes());
+            } else {
+                node.put(YES, END);
             }
             if (StringUtils.isNotBlank(adapter.getNo())) {
                 node.put(NO, adapter.getNo());
+            } else {
+                node.put(NO, END);
             }
             if (adapter.isStart()) {
                 node.put(START, Boolean.TRUE);
@@ -136,12 +141,8 @@ public final class JsonExporter {
     private static JsonNode createFlow(FlowAdapter flowAdapter, TaskAdapter taskAdapter, Set<String> done) {
         ObjectNode node = objectMapper.createObjectNode();
         node.put(NAME, taskAdapter.getName());
-        String yes = taskAdapter.getYes();
-        String no = taskAdapter.getNo();
-        if (StringUtils.isNotBlank(yes) || StringUtils.isNotBlank(no)) {
-            addTaskNode(node, flowAdapter, taskAdapter.getName(), YES, yes, done);
-            addTaskNode(node, flowAdapter, taskAdapter.getName(), NO, no, done);
-        }
+        addTaskNode(node, flowAdapter, taskAdapter.getName(), YES, taskAdapter.getYes(), done);
+        addTaskNode(node, flowAdapter, taskAdapter.getName(), NO, taskAdapter.getNo(), done);
         return node;
     }
 
@@ -154,6 +155,8 @@ public final class JsonExporter {
             if (jsonNode != null) {
                 node.put(key, jsonNode);
             }
+        } else {
+            node.put(key, END);
         }
     }
 

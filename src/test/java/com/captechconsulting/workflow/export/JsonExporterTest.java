@@ -52,6 +52,10 @@ public class JsonExporterTest {
         ObjectNode task1Yes = (ObjectNode) flow.get("yes");
         assertEquals("task2", task1Yes.get("name").asText());
 
+        // Task1 Yes -> Task2 No -> END
+        assertTrue(task1Yes.get("no").isTextual());
+        assertEquals("END", task1Yes.get("no").asText());
+
         // Task1 No -> Task3
         assertTrue(flow.get("no").isObject());
         ObjectNode task1No = (ObjectNode) flow.get("no");
@@ -62,6 +66,14 @@ public class JsonExporterTest {
         ObjectNode task2Yes = (ObjectNode) task1Yes.get("yes");
         assertEquals("task5", task2Yes.get("name").asText());
 
+        // Task1 Yes -> Task2 Yes -> Task5 No -> END
+        assertTrue(task2Yes.get("no").isTextual());
+        assertEquals("END", task2Yes.get("no").asText());
+
+        // Task1 Yes -> Task2 Yes -> Task5 Yes -> END
+        assertTrue(task2Yes.get("yes").isTextual());
+        assertEquals("END", task2Yes.get("yes").asText());
+
         // Task1 No -> Task3 Yes -> Task4
         assertTrue(task1No.get("yes").isObject());
         ObjectNode task3Yes = (ObjectNode) task1No.get("yes");
@@ -71,6 +83,24 @@ public class JsonExporterTest {
         assertTrue(task1No.get("no").isObject());
         ObjectNode task3No = (ObjectNode) task1No.get("no");
         assertEquals("task2", task3No.get("name").asText());
+
+        // Task1 No -> Task3 Yes -> Task4 No -> Task 5
+        assertTrue(task3Yes.get("no").isObject());
+        ObjectNode task4No = (ObjectNode) task3Yes.get("no");
+        assertEquals("task5", task4No.get("name").asText());
+
+        // Task1 No -> Task3 Yes -> Task4 Yes -> END
+        assertTrue(task3Yes.get("yes").isTextual());
+        assertEquals("END", task3Yes.get("yes").asText());
+
+        // Task1 No -> Task3 Yes -> Task4 Yes -> END
+        assertTrue(task3No.get("yes").isTextual());
+        assertEquals("END", task3No.get("yes").asText());
+
+        // Task1 No -> Task3 Yes -> Task4 No -> END
+        assertTrue(task3No.get("yes").isTextual());
+        assertEquals("END", task3No.get("no").asText());
+
     }
 
 }

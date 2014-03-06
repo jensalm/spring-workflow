@@ -80,6 +80,7 @@ public class SimpleFlow2Test {
         }
 
         @Task
+        @No("task5")
         public Boolean task4(String s, Map m, List l) {
             LOG.debug("-----------------------");
             LOG.debug("Task 4");
