@@ -20,22 +20,22 @@ public class FlowExecutor extends HashMap<String, FlowAdapter> {
      * Executes the named flow by getting the FlowAdapter that
      * corresponds to the name and calling the start method.
      * @param name
-     * @param types
+     * @param args
      * @return if the last task return true or false
      * @throws WorkflowException
      * @see FlowAdapter
      * @see TaskAdapter
      */
-    public boolean execute(String name, Object... types) throws WorkflowException {
+    public boolean execute(String name, Object... args) throws WorkflowException {
         FlowAdapter flowAdapter = get(name);
-        return flowAdapter.start(types);
+        return flowAdapter.start(args);
     }
 
     @Override
     public FlowAdapter get(Object key) {
         FlowAdapter flowAdapter = super.get(key);
         if (flowAdapter == null) {
-            throw new RuntimeException("No flow named: " + key.toString());
+            throw new IllegalArgumentException("No flow named: " + key.toString());
         }
         return flowAdapter;
     }

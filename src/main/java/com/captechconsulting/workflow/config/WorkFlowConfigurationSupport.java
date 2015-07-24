@@ -2,16 +2,18 @@ package com.captechconsulting.workflow.config;
 
 import com.captechconsulting.workflow.FlowExecutor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class WorkFlowConfigurationSupport {
 
     @Bean
-    public FlowExecutorBeanPostProcessor createFlowExecutorBeanPostProcessor() {
-        return new FlowExecutorBeanPostProcessor();
+    public WorkflowBeanFactoryPostProcessor createWorkflowBeanFactoryPostProcessor() {
+        return new WorkflowBeanFactoryPostProcessor();
     }
 
     @Bean
-    public FlowExecutor createFlow() {
+    public FlowExecutor createFlowExecutor() {
         return new FlowExecutor();
     }
 }

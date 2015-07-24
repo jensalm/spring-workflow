@@ -1,36 +1,42 @@
 package com.captechconsulting.workflow.missing;
 
-import com.captechconsulting.workflow.FlowExecutor;
+import com.captechconsulting.workflow.WorkflowException;
+import com.captechconsulting.workflow.WorkflowExecutor;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.Flow;
 import com.captechconsulting.workflow.stereotypes.Start;
 import com.captechconsulting.workflow.stereotypes.Task;
 import com.captechconsulting.workflow.stereotypes.Yes;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = com.captechconsulting.workflow.missing.MissingTaskFlowTest.class)
 @Configuration
-@ComponentScan(basePackages = "com.captechconsulting.workflow.missing")
 @EnableWorkFlow
 public class MissingTaskFlowTest {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(MissingTaskFlowTest.class);
 
-    @Test(expected = BeanCreationException.class)
+    @Autowired
+    @Qualifier("MissingTaskFlow")
+    private WorkflowExecutor missingTaskFlow;
+
+    @Ignore
+    @Test(expected = IllegalArgumentException.class)
     public void test() throws Throwable {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(MissingTaskFlowTest.class);
-        FlowExecutor executor = ctx.getBean(FlowExecutor.class);
-        assertNotNull(executor);
-        boolean success = executor.execute("MissingTaskFlow");
+        boolean success = missingTaskFlow.execute();
         assertTrue(success);
     }
 

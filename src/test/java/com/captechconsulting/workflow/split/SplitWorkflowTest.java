@@ -1,34 +1,37 @@
 package com.captechconsulting.workflow.split;
 
-import com.captechconsulting.workflow.FlowExecutor;
+import com.captechconsulting.workflow.WorkflowExecutor;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.*;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Random;
 
-import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = com.captechconsulting.workflow.split.SplitWorkflowTest.class)
 @Configuration
-@ComponentScan(basePackages = "com.captechconsulting.workflow.split")
 @EnableWorkFlow
 public class SplitWorkflowTest {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(SplitWorkflowTest.class);
 
+    @Autowired
+    @Qualifier("split")
+    private WorkflowExecutor splitFlow;
+
     @Test
     public void test() throws Throwable {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(SplitWorkflowTest.class);
-        FlowExecutor executor = ctx.getBean(FlowExecutor.class);
-        assertNotNull(executor);
-        boolean success = executor.get("split").start("");
+        boolean success = splitFlow.execute("");
         assertTrue(success);
     }
 

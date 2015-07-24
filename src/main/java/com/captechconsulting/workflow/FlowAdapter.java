@@ -65,19 +65,21 @@ public class FlowAdapter {
             }
             TaskAdapter adapter = tasks.get(taskName);
             if (adapter != null) {
-                LOG.debug("Processing task '" + adapter.getName() + "'");
+                LOG.debug("Processing task '{}'", adapter.getName());
                 boolean result = adapter.process(args);
                 if (result) {
-                    LOG.debug("Task returned true, processing yes task");
+                    LOG.debug("Task returned true, processing @Yes task");
                     return processTask(adapter.getYes(), args);
                 } else {
-                    LOG.debug("Task returned false, processing no task");
+                    LOG.debug("Task returned false, processing @No task");
                     return processTask(adapter.getNo(), args);
                 }
             }
+            String message = String.format("Trying to execute task '%s' to execute but the task does not exist", taskName);
+            throw new WorkflowException(getName(), taskName, message);
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("No task, this process is ending");
+            LOG.debug("No task, this flow is ending");
         }
         return true;
     }

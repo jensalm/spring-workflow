@@ -1,37 +1,46 @@
 package com.captechconsulting.workflow.shared;
 
-import com.captechconsulting.workflow.FlowExecutor;
+import com.captechconsulting.workflow.WorkflowExecutor;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.Flow;
 import com.captechconsulting.workflow.stereotypes.Start;
 import com.captechconsulting.workflow.stereotypes.Task;
 import com.captechconsulting.workflow.stereotypes.Yes;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = com.captechconsulting.workflow.shared.SharedWorkflowTest.class)
 @Configuration
-@ComponentScan(basePackages = "com.captechconsulting.workflow.shared")
 @EnableWorkFlow
 public class SharedWorkflowTest {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(SharedWorkflowTest.class);
 
+    @Autowired
+    @Qualifier("shared1")
+    private WorkflowExecutor shared1;
+
+
+    @Autowired
+    @Qualifier("shared2")
+    private WorkflowExecutor shared2;
+
+
     @Test
     public void test() throws Throwable {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(SharedWorkflowTest.class);
-        FlowExecutor executor = ctx.getBean(FlowExecutor.class);
-        assertNotNull(executor);
-        boolean success = executor.execute("shared1", "");
+        boolean success = shared1.execute("");
         assertTrue(success);
-        success = executor.get("shared2").start("");
+        success = shared2.execute("");
         assertTrue(success);
     }
 
