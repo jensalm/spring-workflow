@@ -1,6 +1,5 @@
 package com.captechconsulting.workflow;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class FlowAdapter implements Workflow {
 
     private String description;
 
-    private Map<String, TaskAdapter> tasks = Maps.newHashMap();
+    private Map<String, TaskAdapter> tasks = new HashMap<>();
 
     /**
      * Creates a new FlowAdapter
@@ -99,7 +98,7 @@ public class FlowAdapter implements Workflow {
      * @return tasks in this flow
      */
     public Map<String, TaskAdapter> getTasks() {
-        HashMap<String, TaskAdapter> uniqueTasks = Maps.newHashMap(tasks);
+        Map<String, TaskAdapter> uniqueTasks = new HashMap<>(tasks);
         uniqueTasks.remove(START_TASK);
         return Collections.unmodifiableMap(uniqueTasks);
     }

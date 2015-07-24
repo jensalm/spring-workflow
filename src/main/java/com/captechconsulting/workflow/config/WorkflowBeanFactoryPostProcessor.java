@@ -4,7 +4,6 @@ import com.captechconsulting.workflow.FlowAdapter;
 import com.captechconsulting.workflow.TaskAdapter;
 import com.captechconsulting.workflow.stereotypes.Flow;
 import com.captechconsulting.workflow.stereotypes.Task;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -40,7 +39,7 @@ public class WorkflowBeanFactoryPostProcessor<T> implements BeanFactoryPostProce
         scanner.addIncludeFilter(new AnnotationTypeFilter(Flow.class));
         Set<BeanDefinition> beanDefinitions = scanner.findCandidateComponents("");
 
-        HashMap<String, FlowAdapter> flowAdapters = Maps.newHashMap();
+        Map<String, FlowAdapter> flowAdapters = new HashMap<>();
         for (BeanDefinition bd : beanDefinitions) {
             createFlowAdapter(flowAdapters, (AnnotatedBeanDefinition) bd);
         }
@@ -58,7 +57,7 @@ public class WorkflowBeanFactoryPostProcessor<T> implements BeanFactoryPostProce
      */
     private void createFlowAdapter(Map<String, FlowAdapter> flowAdapters, AnnotatedBeanDefinition bd) {
 
-        MultiValueMap<String, Object> attributes = bd.getMetadata().getAllAnnotationAttributes(Flow.class.getName());
+        Map<String, Object> attributes = bd.getMetadata().getAnnotationAttributes(Flow.class.getName());
 
         Class<T> type;
         try {
@@ -97,16 +96,16 @@ public class WorkflowBeanFactoryPostProcessor<T> implements BeanFactoryPostProce
         scanTasks(bean, flowAdapter);
     }
 
-    private String getFirstOrDefault(MultiValueMap<String, Object> attributes, String attribute, String defaultValue) {
-        Object value = attributes.getFirst(attribute);
+    private String getFirstOrDefault(Map<String, Object> attributes, String attribute, String defaultValue) {
+        Object value = attributes.get(attribute);
         if (value != null && !"".equals(value)) {
             return (String) value;
         }
         return defaultValue;
     }
 
-    private String[] getFirstOrDefault(MultiValueMap<String, Object> attributes, String attribute, String[] defaultValue) {
-        Object value = attributes.getFirst(attribute);
+    private String[] getFirstOrDefault(Map<String, Object> attributes, String attribute, String[] defaultValue) {
+        Object value = attributes.get(attribute);
         if (value != null && !Arrays.equals((String[]) value, new String[]{})) {
             return (String[]) value;
         }

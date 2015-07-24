@@ -3,8 +3,6 @@ package com.captechconsulting.workflow.simple2;
 import com.captechconsulting.workflow.Workflow;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.*;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -15,11 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,7 +31,7 @@ public class SimpleFlow2Test {
 
     @Test
     public void test() throws Throwable {
-        boolean success = simpleFlow.execute("", Maps.newHashMap(), Lists.newArrayList());
+        boolean success = simpleFlow.execute("", new HashMap(), new ArrayList());
         assertTrue(success);
     }
 

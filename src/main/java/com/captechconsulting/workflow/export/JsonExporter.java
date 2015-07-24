@@ -7,11 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -92,7 +91,7 @@ public final class JsonExporter {
                 taskNode.add(export(adapter, fullExport));
             }
             rootNode.put(TASKS, taskNode);
-            rootNode.put(FLOW, createFlow(flowAdapter, flowAdapter.getStartTask(), Sets.<String>newHashSet()));
+            rootNode.put(FLOW, createFlow(flowAdapter, flowAdapter.getStartTask(), new HashSet()));
         }
         return rootNode;
     }
