@@ -35,7 +35,7 @@ public class SplitWorkflowTest {
         assertTrue(success);
     }
 
-    @Flow(name="split", types = {String.class})
+    @Flow(name="split")
     public static class Split1 {
 
         @Task
@@ -64,7 +64,7 @@ public class SplitWorkflowTest {
         }
     }
 
-    @Flow(name="split", types = {String.class})
+    @Flow(name="split")
     public static class Split2 {
         @Task
         @Yes("task4")

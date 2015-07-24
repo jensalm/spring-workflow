@@ -47,7 +47,7 @@ public class SimpleFlow2Test {
         assertTrue(success);
     }
 
-    @Flow(types = {String.class, Map.class, List.class})
+    @Flow
     public static class SimpleFlow2 {
 
         @Task

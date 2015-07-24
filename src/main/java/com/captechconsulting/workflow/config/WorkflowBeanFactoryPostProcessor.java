@@ -45,10 +45,10 @@ public class WorkflowBeanFactoryPostProcessor implements BeanFactoryPostProcesso
         Flow flow = AnnotationUtils.findAnnotation(bean.getClass(), Flow.class);
         if (flow != null) {
             if (flow.name().length == 0) {
-                createFlowAdapter(flowExecutor, bean, bean.getClass().getSimpleName(), "", flow.types());
+                createFlowAdapter(flowExecutor, bean, bean.getClass().getSimpleName(), "");
             } else {
                 for (String flowName : flow.name()) {
-                    createFlowAdapter(flowExecutor, bean, flowName, flow.description(), flow.types());
+                    createFlowAdapter(flowExecutor, bean, flowName, flow.description());
                 }
             }
         }
@@ -59,9 +59,8 @@ public class WorkflowBeanFactoryPostProcessor implements BeanFactoryPostProcesso
      *
      * @param flowName
      * @param description
-     * @param types
      */
-    private void createFlowAdapter(FlowExecutor flowExecutor, Object bean, String flowName, String description, Class... types) {
+    private void createFlowAdapter(FlowExecutor flowExecutor, Object bean, String flowName, String description) {
         FlowAdapter adapter;
         if (flowExecutor.containsKey(flowName)) {
             adapter = flowExecutor.get(flowName);
@@ -73,7 +72,7 @@ public class WorkflowBeanFactoryPostProcessor implements BeanFactoryPostProcesso
             we.setName(flowName);
             beanFactory.registerSingleton(flowName, we);
         }
-        scanTasks(bean, adapter, types);
+        scanTasks(bean, adapter);
     }
 
     /**
@@ -122,13 +121,13 @@ public class WorkflowBeanFactoryPostProcessor implements BeanFactoryPostProcesso
      * @param flowAdapter
      * @param types
      */
-    protected void scanTasks(final Object bean, final FlowAdapter flowAdapter, final Class... types) {
+    protected void scanTasks(final Object bean, final FlowAdapter flowAdapter) {
         ReflectionUtils.doWithMethods(bean.getClass(), new ReflectionUtils.MethodCallback() {
             @Override
             public void doWith(Method method) {
                 Task task = AnnotationUtils.findAnnotation(method, Task.class);
                 if (task != null) {
-                    flowAdapter.add(new TaskAdapter(task, flowAdapter, bean, method, types));
+                    flowAdapter.add(new TaskAdapter(task, flowAdapter, bean, method));
                 }
             }
         });

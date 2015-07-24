@@ -44,7 +44,7 @@ public class SharedWorkflowTest {
         assertTrue(success);
     }
 
-    @Flow(name="shared1", types = {String.class})
+    @Flow(name="shared1")
     public static class Shared1 {
 
         @Task
@@ -59,7 +59,7 @@ public class SharedWorkflowTest {
 
     }
 
-    @Flow( name="shared2", types = {String.class})
+    @Flow( name="shared2")
     public static class Shared2 {
 
         @Task
@@ -74,7 +74,7 @@ public class SharedWorkflowTest {
 
     }
 
-    @Flow(name={"shared1", "shared2"}, types = {String.class})
+    @Flow(name={"shared1", "shared2"})
     public static class Shared3 {
 
         @Task

@@ -21,12 +21,6 @@ public @interface Flow {
     String[] name() default { };
 
     /**
-     * The types of arguments the tasks in this flow will have.
-     * @return
-     */
-    Class[] types() default { };
-
-    /**
      * Optional description of the flow
      * @return
      */

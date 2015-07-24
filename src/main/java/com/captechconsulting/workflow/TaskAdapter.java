@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 public class TaskAdapter {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(TaskAdapter.class);
+
     private Object bean;
     private String name;
     private String flow;
@@ -30,6 +31,7 @@ public class TaskAdapter {
     private String no;
     private boolean start;
     private MethodHandle methodHandle = null;
+    private final Class<?>[] types;
     private String description;
 
     /**
@@ -39,9 +41,8 @@ public class TaskAdapter {
      * @param flowAdapter
      * @param bean
      * @param method
-     * @param types
      */
-    public TaskAdapter(Task task, FlowAdapter flowAdapter, Object bean, Method method, Class... types) {
+    public TaskAdapter(Task task, FlowAdapter flowAdapter, Object bean, Method method) {
 
         Yes yes = AnnotationUtils.findAnnotation(method, Yes.class);
         No no = AnnotationUtils.findAnnotation(method, No.class);
@@ -54,6 +55,7 @@ public class TaskAdapter {
         this.start = start != null;
         this.name = StringUtils.isNotBlank(task.value()) ? task.value() : method.getName();
         this.description = task.description();
+        this.types = method.getParameterTypes();
         this.methodHandle = getMethodHandle(method.getName(), types);
     }
 
@@ -128,6 +130,10 @@ public class TaskAdapter {
 
     public String getMethod() {
         return methodHandle.toString();
+    }
+
+    public Class<?>[] getTypes() {
+        return types;
     }
 
     public String getDescription() {

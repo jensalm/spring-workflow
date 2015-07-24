@@ -36,7 +36,7 @@ public class SimpleFlowTest {
         assertTrue(success);
     }
 
-    @Flow(types = SimpleFlowContext.class)
+    @Flow
     public static class SimpleFlow {
 
         @Task
