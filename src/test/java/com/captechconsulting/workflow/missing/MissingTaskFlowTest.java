@@ -1,8 +1,7 @@
 package com.captechconsulting.workflow.missing;
 
-import com.captechconsulting.workflow.WorkflowExecutor;
+import com.captechconsulting.workflow.Workflow;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
-import com.captechconsulting.workflow.stereotypes.Flow;
 import com.captechconsulting.workflow.stereotypes.Start;
 import com.captechconsulting.workflow.stereotypes.Task;
 import com.captechconsulting.workflow.stereotypes.Yes;
@@ -29,7 +28,7 @@ public class MissingTaskFlowTest {
 
     @Autowired
     @Qualifier("MissingTaskFlow")
-    private WorkflowExecutor missingTaskFlow;
+    private Workflow missingTaskFlow;
 
     @Ignore
     @Test(expected = IllegalArgumentException.class)
@@ -38,7 +37,7 @@ public class MissingTaskFlowTest {
         assertTrue(success);
     }
 
-    @Flow
+    //@Flow
     public static class MissingTaskFlow {
 
         @Task

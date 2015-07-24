@@ -1,6 +1,5 @@
 package com.captechconsulting.workflow.export;
 
-import com.captechconsulting.workflow.FlowExecutor;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.FlowAdapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +14,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -28,9 +29,9 @@ public class JsonExporterTest {
     @Test
     public void print() throws JsonProcessingException {
         ApplicationContext ctx = new AnnotationConfigApplicationContext(JsonExporterTest.class);
-        FlowExecutor executor = ctx.getBean(FlowExecutor.class);
+        Map<String, FlowAdapter> executors = ctx.getBeansOfType(FlowAdapter.class);
 
-        FlowAdapter flowAdapter = executor.get("SimpleFlow2");
+        FlowAdapter flowAdapter = executors.get("SimpleFlow2");
         JsonNode node = JsonExporter.export(flowAdapter, true);
         System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(node));
 

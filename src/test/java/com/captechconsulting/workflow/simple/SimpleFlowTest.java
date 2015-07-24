@@ -1,6 +1,6 @@
 package com.captechconsulting.workflow.simple;
 
-import com.captechconsulting.workflow.WorkflowExecutor;
+import com.captechconsulting.workflow.Workflow;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.Flow;
 import com.captechconsulting.workflow.stereotypes.Start;
@@ -28,7 +28,7 @@ public class SimpleFlowTest {
 
     @Autowired
     @Qualifier("SimpleFlow")
-    private WorkflowExecutor simpleFlow;
+    private Workflow simpleFlow;
 
     @Test
     public void test() throws Throwable {

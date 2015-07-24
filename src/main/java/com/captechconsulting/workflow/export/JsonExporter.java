@@ -88,8 +88,8 @@ public final class JsonExporter {
         rootNode.put(DESCRIPTION, flowAdapter.getDescription());
         if (fullExport) {
             ArrayNode taskNode = objectMapper.createArrayNode();
-            for (Map.Entry<String, TaskAdapter> entry : flowAdapter.getTasks().entrySet()) {
-                taskNode.add(export(entry.getValue(), fullExport));
+            for (TaskAdapter adapter : (Collection<TaskAdapter>)flowAdapter.getTasks().values()) {
+                taskNode.add(export(adapter, fullExport));
             }
             rootNode.put(TASKS, taskNode);
             rootNode.put(FLOW, createFlow(flowAdapter, flowAdapter.getStartTask(), Sets.<String>newHashSet()));

@@ -1,6 +1,6 @@
 package com.captechconsulting.workflow.split;
 
-import com.captechconsulting.workflow.WorkflowExecutor;
+import com.captechconsulting.workflow.Workflow;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.*;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class SplitWorkflowTest {
 
     @Autowired
     @Qualifier("split")
-    private WorkflowExecutor splitFlow;
+    private Workflow splitFlow;
 
     @Test
     public void test() throws Throwable {

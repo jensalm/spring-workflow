@@ -104,6 +104,21 @@ public class TaskAdapter {
         }
     }
 
+    /**
+     * Checks that the arguments match the types defined for the method
+     * @param args
+     */
+    public void validateArguments(Object[] args) throws WorkflowException {
+        if (args.length != types.length) {
+            throw new WorkflowException(flow, getName(), "The number of arguments don't match the method's signature");
+        }
+        for (int i = 0; i < args.length; i++) {
+            if (!types[i].isAssignableFrom(args[i].getClass())) {
+                throw new WorkflowException(flow, getName(), "The arguments types don't match the method's signature");
+            }
+        }
+    }
+
     public String getName() {
         return name;
     }

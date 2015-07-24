@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ import java.util.Map;
  * all tasks depending on the tasks return type.
  * @see TaskAdapter
  */
-public class FlowAdapter {
+public class FlowAdapter implements Workflow {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(FlowAdapter.class);
 
@@ -38,12 +37,12 @@ public class FlowAdapter {
 
     /**
      * Starts the processing of the flow by getting the task marked with
-     * @Start and executing it.
+     * \@Start and executing it.
      * @param args
      * @return if the the task succeed or not
      * @throws WorkflowException
      */
-    public boolean start(Object... args) throws WorkflowException {
+    public boolean execute(Object... args) throws WorkflowException {
         return processTask(START_TASK, args);
     }
 
@@ -51,7 +50,7 @@ public class FlowAdapter {
      * Recursively executes all tasks associated with this FlowAdapter.
      * @param taskName
      * @param args
-     * @return
+     * @return true or false
      * @throws WorkflowException
      */
     private boolean processTask(String taskName, Object... args) throws WorkflowException {
@@ -65,6 +64,9 @@ public class FlowAdapter {
             }
             TaskAdapter adapter = tasks.get(taskName);
             if (adapter != null) {
+                if (adapter.isStart()) {
+                    adapter.validateArguments(args);
+                }
                 LOG.debug("Processing task '{}'", adapter.getName());
                 boolean result = adapter.process(args);
                 if (result) {
@@ -75,7 +77,7 @@ public class FlowAdapter {
                     return processTask(adapter.getNo(), args);
                 }
             }
-            String message = String.format("Trying to execute task '%s' to execute but the task does not exist", taskName);
+            String message = String.format("Trying to execute task '%s' but the task does not exist", taskName);
             throw new WorkflowException(getName(), taskName, message);
         }
         if (LOG.isDebugEnabled()) {
@@ -129,7 +131,7 @@ public class FlowAdapter {
     public void remove(TaskAdapter taskAdapter) {
         tasks.remove(taskAdapter.getName());
         if (taskAdapter.isStart()) {
-            setStartTask(null);
+            tasks.remove(START_TASK);
         }
     }
 
@@ -139,7 +141,8 @@ public class FlowAdapter {
      */
     public void setStartTask(TaskAdapter taskAdapter) {
         if (tasks.containsKey(START_TASK)) {
-            throw new BeanDefinitionValidationException("Only one @Task can be annotated with @Start");
+            String format = "Only one @Task can be annotated with @Start. Task '%s' of flow '%s' is the second one found.";
+            throw new IllegalArgumentException(String.format(format, taskAdapter.getName(), getName()));
         }
         tasks.put(START_TASK, taskAdapter);
     }

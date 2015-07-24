@@ -1,7 +1,5 @@
 package com.captechconsulting.workflow.stereotypes;
 
-import org.springframework.stereotype.Component;
-
 import java.lang.annotation.*;
 
 /**
@@ -11,18 +9,17 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Component
 public @interface Flow {
 
     /**
      * Name of the flow, will default to the simple class name if not specified
-     * @return
+     * @return an optional name
      */
     String[] name() default { };
 
     /**
-     * Optional description of the flow
-     * @return
+     * Description of the flow
+     * @return an optional description
      */
     String description() default "";
 }

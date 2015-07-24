@@ -1,8 +1,7 @@
 package com.captechconsulting.workflow.multiple;
 
-import com.captechconsulting.workflow.WorkflowExecutor;
+import com.captechconsulting.workflow.Workflow;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
-import com.captechconsulting.workflow.stereotypes.Flow;
 import com.captechconsulting.workflow.stereotypes.Start;
 import com.captechconsulting.workflow.stereotypes.Task;
 import com.captechconsulting.workflow.stereotypes.Yes;
@@ -30,16 +29,16 @@ public class MultipleStartFlowTest {
 
     @Autowired
     @Qualifier("MultipleStartFlow")
-    private WorkflowExecutor workflowExecutor;
+    private Workflow workflow;
 
     @Ignore
     @Test(expected = BeanCreationException.class)
     public void test() throws Throwable {
-        boolean success = workflowExecutor.execute();
+        boolean success = workflow.execute();
         assertTrue(success);
     }
 
-    @Flow
+    //@Flow
     public static class MultipleStartFlow {
 
         @Task

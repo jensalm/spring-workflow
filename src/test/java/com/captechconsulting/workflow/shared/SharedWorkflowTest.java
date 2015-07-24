@@ -1,6 +1,6 @@
 package com.captechconsulting.workflow.shared;
 
-import com.captechconsulting.workflow.WorkflowExecutor;
+import com.captechconsulting.workflow.Workflow;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.Flow;
 import com.captechconsulting.workflow.stereotypes.Start;
@@ -28,12 +28,12 @@ public class SharedWorkflowTest {
 
     @Autowired
     @Qualifier("shared1")
-    private WorkflowExecutor shared1;
+    private Workflow shared1;
 
 
     @Autowired
     @Qualifier("shared2")
-    private WorkflowExecutor shared2;
+    private Workflow shared2;
 
 
     @Test
@@ -56,7 +56,6 @@ public class SharedWorkflowTest {
             LOG.debug("-----------------------");
             return false;
         }
-
     }
 
     @Flow( name="shared2")
@@ -71,7 +70,6 @@ public class SharedWorkflowTest {
             LOG.debug("-----------------------");
             return true;
         }
-
     }
 
     @Flow(name={"shared1", "shared2"})

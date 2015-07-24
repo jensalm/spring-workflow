@@ -1,7 +1,6 @@
 package com.captechconsulting.workflow.simple2;
 
-import com.captechconsulting.workflow.FlowExecutor;
-import com.captechconsulting.workflow.WorkflowExecutor;
+import com.captechconsulting.workflow.Workflow;
 import com.captechconsulting.workflow.config.EnableWorkFlow;
 import com.captechconsulting.workflow.stereotypes.*;
 import com.google.common.collect.Lists;
@@ -12,9 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -36,14 +32,11 @@ public class SimpleFlow2Test {
 
     @Autowired
     @Qualifier("SimpleFlow2")
-    private WorkflowExecutor simpleFlow;
+    private Workflow simpleFlow;
 
     @Test
     public void test() throws Throwable {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(SimpleFlow2Test.class);
-        FlowExecutor executor = ctx.getBean(FlowExecutor.class);
-        assertNotNull(executor);
-        boolean success = executor.execute("SimpleFlow2", "", Maps.newHashMap(), Lists.newArrayList());
+        boolean success = simpleFlow.execute("", Maps.newHashMap(), Lists.newArrayList());
         assertTrue(success);
     }
 
